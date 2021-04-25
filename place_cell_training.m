@@ -1,4 +1,4 @@
-spikeid = 190;
+spikeid = 19;
  spiket100 = spiket(spikeind==spikeid);
  spiket100_whl_round = round(spiket100/512);
  spiket100_place = zeros(length(spiket100),2);
@@ -29,7 +29,7 @@ colorbar
 xlabel('x')
 ylabel('y')
 %}
-bin = 10;
+bin = 20;
 x_max = max(whl(:,1));
 x_min = min(whl(:,1));
 y_max = max(whl(:,2));
@@ -39,13 +39,13 @@ x_axis_max = 700;
 y_axis_min = 50;
 y_axis_max = 500;
 
-x_width = round((x_axis_max - x_axis_min) / bin);
-y_width = round((y_axis_max - y_axis_min) / bin);
-stay_time_m = zeros(bin,bin);
-spike_num_m = zeros(bin,bin);
-place_field_m = zeros(bin,bin);
-for a=1:bin
-    for b=1:bin
+x_width = (x_axis_max - x_axis_min) / bin;
+y_width = (y_axis_max - y_axis_min) / bin;
+stay_time_m = zeros(bin+1,bin+1);
+spike_num_m = zeros(bin+1,bin+1);
+place_field_m = zeros(bin+1,bin+1);
+for a=1:bin+1
+    for b=1:bin+1
         for c=1:length(whl(:,1))
             if whl(c,1) >= x_width*(a-1) + x_axis_min && whl(c,1) < x_width*a + x_axis_min
                 if whl(c,2) >= y_width*(b-1) + y_axis_min && whl(c,2) < y_width*b + y_axis_min
@@ -62,8 +62,8 @@ for a=1:bin
         end
     end
 end
-for i=1:bin
-    for j=1:bin
+for i=1:bin+1
+    for j=1:bin+1
         if stay_time_m(i,j) ~= 0
             place_field_m(i,j) = spike_num_m(i,j) / stay_time_m(i,j);
         end
@@ -72,9 +72,12 @@ end
 stay_time_m
 spike_num_m
 place_field_m
-[X,Y] = meshgrid(1:0.5:10,1:20);
-Z = sin(X) + cos(Y);
-surface(X,Y,Z)
+[X,Y] = meshgrid(x_axis_min:x_width:x_axis_max,y_axis_max:-y_width:y_axis_min);
+Z=place_field_m;
+figure
+surf(X,Y,Z)
 xlabel('x')
 ylabel('y')
+title('place field','FontSize',12)
 colorbar
+view(2)
